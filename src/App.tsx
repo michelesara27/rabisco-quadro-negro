@@ -1,8 +1,9 @@
-import React, { useEffect } from 'react';
-import { Canvas } from './components/Canvas';
-import { Toolbar } from './components/Toolbar';
-import { useDrawing } from './hooks/useDrawing';
-import { exportToJSON, importFromJSON } from './utils/fileManager';
+// src/App.tsx
+import React, { useEffect } from "react";
+import { Canvas } from "./components/Canvas";
+import { Toolbar } from "./components/Toolbar";
+import { useDrawing } from "./hooks/useDrawing";
+import { exportToJSON, importFromJSON } from "./utils/fileManager";
 
 function App() {
   const {
@@ -32,7 +33,7 @@ function App() {
     redo,
     canUndo,
     canRedo,
-    generateId
+    generateId,
   } = useDrawing();
 
   const handleSave = () => {
@@ -40,9 +41,12 @@ function App() {
   };
 
   const handleLoad = (file: File) => {
-    const confirmed = elements.length === 0 || 
-      window.confirm('Isso substituirá o conteúdo atual do canvas. Deseja continuar?');
-    
+    const confirmed =
+      elements.length === 0 ||
+      window.confirm(
+        "Isso substituirá o conteúdo atual do canvas. Deseja continuar?"
+      );
+
     if (confirmed) {
       importFromJSON(
         file,
@@ -62,15 +66,15 @@ function App() {
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.ctrlKey || event.metaKey) {
         switch (event.key) {
-          case 's':
+          case "s":
             event.preventDefault();
             handleSave();
             break;
-          case 'o':
+          case "o":
             event.preventDefault();
             document.querySelector('input[type="file"]')?.click();
             break;
-          case 'z':
+          case "z":
             event.preventDefault();
             if (event.shiftKey) {
               redo();
@@ -78,44 +82,44 @@ function App() {
               undo();
             }
             break;
-          case 'y':
+          case "y":
             event.preventDefault();
             redo();
             break;
-          case 'e':
-            setTool('eraser');
+          case "e":
+            setTool("eraser");
             break;
         }
       }
 
       // Tool shortcuts
       switch (event.key) {
-        case 'v':
-          setTool('select');
+        case "v":
+          setTool("select");
           break;
-        case 'p':
-          setTool('freehand');
+        case "p":
+          setTool("freehand");
           break;
-        case 'r':
-          setTool('rectangle');
+        case "r":
+          setTool("rectangle");
           break;
-        case 'c':
-          setTool('circle');
+        case "c":
+          setTool("circle");
           break;
-        case 'l':
-          setTool('line');
+        case "l":
+          setTool("line");
           break;
-        case 'a':
-          setTool('arrow');
+        case "a":
+          setTool("arrow");
           break;
-        case 't':
-          setTool('text');
+        case "t":
+          setTool("text");
           break;
       }
     };
 
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
   }, [handleSave, undo, redo, setTool]);
 
   // Initial history save
@@ -142,7 +146,7 @@ function App() {
         canUndo={canUndo}
         canRedo={canRedo}
       />
-      
+
       <Canvas
         elements={elements}
         tool={tool}

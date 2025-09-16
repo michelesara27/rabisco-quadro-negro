@@ -1,5 +1,6 @@
-import React, { useRef, useEffect, useState } from 'react';
-import { DrawingElement, Point, Tool } from '../types/drawing';
+// src/components/Canvas.tsx
+import React, { useRef, useEffect, useState } from "react";
+import { DrawingElement, Point, Tool } from "../types/drawing";
 
 interface CanvasProps {
   elements: DrawingElement[];
@@ -38,13 +39,13 @@ export const Canvas: React.FC<CanvasProps> = ({
   updateElement,
   deleteElement,
   generateId,
-  saveToHistory
+  saveToHistory,
 }) => {
   const svgRef = useRef<SVGSVGElement>(null);
   const [isPanning, setIsPanning] = useState(false);
   const [lastPanPoint, setLastPanPoint] = useState<Point | null>(null);
   const [editingText, setEditingText] = useState<string | null>(null);
-  const [textInput, setTextInput] = useState('');
+  const [textInput, setTextInput] = useState("");
   const [isDragging, setIsDragging] = useState(false);
   const [dragOffset, setDragOffset] = useState<Point>({ x: 0, y: 0 });
 
@@ -55,7 +56,7 @@ export const Canvas: React.FC<CanvasProps> = ({
     const rect = svg.getBoundingClientRect();
     return {
       x: event.clientX - rect.left - pan.x,
-      y: event.clientY - rect.top - pan.y
+      y: event.clientY - rect.top - pan.y,
     };
   };
 
@@ -69,14 +70,14 @@ export const Canvas: React.FC<CanvasProps> = ({
       return;
     }
 
-    if (tool === 'select') {
+    if (tool === "select") {
       const clickedElement = findElementAtPoint(point);
       if (clickedElement) {
         selectElement(clickedElement.id);
         setIsDragging(true);
         setDragOffset({
           x: point.x - (clickedElement.x || 0),
-          y: point.y - (clickedElement.y || 0)
+          y: point.y - (clickedElement.y || 0),
         });
       } else {
         selectElement(null);
@@ -84,7 +85,7 @@ export const Canvas: React.FC<CanvasProps> = ({
       return;
     }
 
-    if (tool === 'eraser') {
+    if (tool === "eraser") {
       const clickedElement = findElementAtPoint(point);
       if (clickedElement) {
         deleteElement(clickedElement.id);
@@ -93,20 +94,20 @@ export const Canvas: React.FC<CanvasProps> = ({
       return;
     }
 
-    if (tool === 'text') {
+    if (tool === "text") {
       const id = generateId();
       const textElement: DrawingElement = {
         id,
-        type: 'text',
+        type: "text",
         x: point.x,
         y: point.y,
-        text: 'Texto',
+        text: "Texto",
         color,
-        strokeWidth: 1
+        strokeWidth: 1,
       };
       addElement(textElement);
       setEditingText(id);
-      setTextInput('Texto');
+      setTextInput("Texto");
       saveToHistory();
       return;
     }
@@ -116,44 +117,44 @@ export const Canvas: React.FC<CanvasProps> = ({
 
     const id = generateId();
 
-    if (tool === 'freehand') {
+    if (tool === "freehand") {
       currentElement.current = {
         id,
-        type: 'freehand',
+        type: "freehand",
         points: [point],
         color,
-        strokeWidth
+        strokeWidth,
       };
-    } else if (tool === 'rectangle') {
+    } else if (tool === "rectangle") {
       currentElement.current = {
         id,
-        type: 'rectangle',
+        type: "rectangle",
         x: point.x,
         y: point.y,
         width: 0,
         height: 0,
         color,
-        strokeWidth
+        strokeWidth,
       };
-    } else if (tool === 'circle') {
+    } else if (tool === "circle") {
       currentElement.current = {
         id,
-        type: 'circle',
+        type: "circle",
         x: point.x,
         y: point.y,
         width: 0,
         height: 0,
         color,
-        strokeWidth
+        strokeWidth,
       };
-    } else if (tool === 'line' || tool === 'arrow') {
+    } else if (tool === "line" || tool === "arrow") {
       currentElement.current = {
         id,
         type: tool,
         startPoint: point,
         endPoint: point,
         color,
-        strokeWidth
+        strokeWidth,
       };
     }
 
@@ -171,40 +172,45 @@ export const Canvas: React.FC<CanvasProps> = ({
       return;
     }
 
-    if (isDragging && selectedElement && tool === 'select') {
+    if (isDragging && selectedElement && tool === "select") {
       const point = getMousePosition(event);
-      const selectedEl = elements.find(el => el.id === selectedElement);
-      
+      const selectedEl = elements.find((el) => el.id === selectedElement);
+
       if (selectedEl) {
-        if (selectedEl.type === 'text') {
+        if (selectedEl.type === "text") {
           updateElement(selectedElement, {
             x: point.x - dragOffset.x,
-            y: point.y - dragOffset.y
+            y: point.y - dragOffset.y,
           });
-        } else if (selectedEl.type === 'rectangle' || selectedEl.type === 'circle') {
+        } else if (
+          selectedEl.type === "rectangle" ||
+          selectedEl.type === "circle"
+        ) {
           updateElement(selectedElement, {
             x: point.x - dragOffset.x,
-            y: point.y - dragOffset.y
+            y: point.y - dragOffset.y,
           });
-        } else if (selectedEl.type === 'line' || selectedEl.type === 'arrow') {
-          const deltaX = point.x - dragOffset.x - (selectedEl.startPoint?.x || 0);
-          const deltaY = point.y - dragOffset.y - (selectedEl.startPoint?.y || 0);
+        } else if (selectedEl.type === "line" || selectedEl.type === "arrow") {
+          const deltaX =
+            point.x - dragOffset.x - (selectedEl.startPoint?.x || 0);
+          const deltaY =
+            point.y - dragOffset.y - (selectedEl.startPoint?.y || 0);
           updateElement(selectedElement, {
             startPoint: {
               x: (selectedEl.startPoint?.x || 0) + deltaX,
-              y: (selectedEl.startPoint?.y || 0) + deltaY
+              y: (selectedEl.startPoint?.y || 0) + deltaY,
             },
             endPoint: {
               x: (selectedEl.endPoint?.x || 0) + deltaX,
-              y: (selectedEl.endPoint?.y || 0) + deltaY
-            }
+              y: (selectedEl.endPoint?.y || 0) + deltaY,
+            },
           });
         }
       }
       return;
     }
 
-    if (tool === 'eraser') {
+    if (tool === "eraser") {
       const clickedElement = findElementAtPoint(getMousePosition(event));
       if (clickedElement && event.buttons === 1) {
         deleteElement(clickedElement.id);
@@ -215,27 +221,27 @@ export const Canvas: React.FC<CanvasProps> = ({
 
     const point = getMousePosition(event);
 
-    if (tool === 'freehand') {
+    if (tool === "freehand") {
       updateElement(currentElement.current.id, {
-        points: [...(currentElement.current.points || []), point]
+        points: [...(currentElement.current.points || []), point],
       });
       if (currentElement.current.points) {
         currentElement.current.points.push(point);
       }
-    } else if (tool === 'rectangle' || tool === 'circle') {
+    } else if (tool === "rectangle" || tool === "circle") {
       const startP = startPoint.current!;
       const width = point.x - startP.x;
       const height = point.y - startP.y;
-      
+
       updateElement(currentElement.current.id, {
         x: width < 0 ? point.x : startP.x,
         y: height < 0 ? point.y : startP.y,
         width: Math.abs(width),
-        height: Math.abs(height)
+        height: Math.abs(height),
       });
-    } else if (tool === 'line' || tool === 'arrow') {
+    } else if (tool === "line" || tool === "arrow") {
       updateElement(currentElement.current.id, {
-        endPoint: point
+        endPoint: point,
       });
       currentElement.current.endPoint = point;
     }
@@ -267,39 +273,56 @@ export const Canvas: React.FC<CanvasProps> = ({
     // Find element in reverse order (top to bottom)
     for (let i = elements.length - 1; i >= 0; i--) {
       const element = elements[i];
-      
-      if (element.type === 'rectangle' || element.type === 'circle') {
-        if (element.x !== undefined && element.y !== undefined && 
-            element.width !== undefined && element.height !== undefined) {
-          if (point.x >= element.x && point.x <= element.x + element.width &&
-              point.y >= element.y && point.y <= element.y + element.height) {
+
+      if (element.type === "rectangle" || element.type === "circle") {
+        if (
+          element.x !== undefined &&
+          element.y !== undefined &&
+          element.width !== undefined &&
+          element.height !== undefined
+        ) {
+          if (
+            point.x >= element.x &&
+            point.x <= element.x + element.width &&
+            point.y >= element.y &&
+            point.y <= element.y + element.height
+          ) {
             return element;
           }
         }
-      } else if (element.type === 'text') {
+      } else if (element.type === "text") {
         if (element.x !== undefined && element.y !== undefined) {
           // Rough text bounds
           const textWidth = (element.text?.length || 0) * 8;
           const textHeight = 20;
-          if (point.x >= element.x && point.x <= element.x + textWidth &&
-              point.y >= element.y - textHeight && point.y <= element.y) {
+          if (
+            point.x >= element.x &&
+            point.x <= element.x + textWidth &&
+            point.y >= element.y - textHeight &&
+            point.y <= element.y
+          ) {
             return element;
           }
         }
-      } else if (element.type === 'freehand' && element.points) {
+      } else if (element.type === "freehand" && element.points) {
         // Check if point is near any point in the freehand path
         for (const pathPoint of element.points) {
           const distance = Math.sqrt(
-            Math.pow(point.x - pathPoint.x, 2) + Math.pow(point.y - pathPoint.y, 2)
+            Math.pow(point.x - pathPoint.x, 2) +
+              Math.pow(point.y - pathPoint.y, 2)
           );
           if (distance <= element.strokeWidth + 5) {
             return element;
           }
         }
-      } else if (element.type === 'line' || element.type === 'arrow') {
+      } else if (element.type === "line" || element.type === "arrow") {
         if (element.startPoint && element.endPoint) {
           // Check if point is near the line
-          const distance = distanceToLine(point, element.startPoint, element.endPoint);
+          const distance = distanceToLine(
+            point,
+            element.startPoint,
+            element.endPoint
+          );
           if (distance <= element.strokeWidth + 5) {
             return element;
           }
@@ -340,9 +363,9 @@ export const Canvas: React.FC<CanvasProps> = ({
   };
 
   const handleElementDoubleClick = (element: DrawingElement) => {
-    if (element.type === 'text') {
+    if (element.type === "text") {
       setEditingText(element.id);
-      setTextInput(element.text || '');
+      setTextInput(element.text || "");
     }
   };
 
@@ -351,19 +374,19 @@ export const Canvas: React.FC<CanvasProps> = ({
       updateElement(editingText, { text: textInput.trim() });
     }
     setEditingText(null);
-    setTextInput('');
+    setTextInput("");
     saveToHistory();
   };
 
   const handleKeyDown = (event: React.KeyboardEvent) => {
-    if (event.key === 'Delete' && selectedElement) {
+    if (event.key === "Delete" && selectedElement) {
       deleteElement(selectedElement);
       saveToHistory();
-    } else if (event.key === 'Enter' && editingText) {
+    } else if (event.key === "Enter" && editingText) {
       handleTextSubmit();
-    } else if (event.key === 'Escape') {
+    } else if (event.key === "Escape") {
       setEditingText(null);
-      setTextInput('');
+      setTextInput("");
       selectElement(null);
     }
   };
@@ -372,16 +395,18 @@ export const Canvas: React.FC<CanvasProps> = ({
     const baseProps = {
       stroke: element.color,
       strokeWidth: element.strokeWidth,
-      fill: element.fill || 'transparent',
-      className: element.selected ? 'drop-shadow-lg' : ''
+      fill: element.fill || "transparent",
+      className: element.selected ? "drop-shadow-lg" : "",
     };
 
     switch (element.type) {
-      case 'freehand':
+      case "freehand":
         if (!element.points || element.points.length < 2) return null;
         const pathData = element.points.reduce((path, point, index) => {
-          return index === 0 ? `M${point.x},${point.y}` : `${path} L${point.x},${point.y}`;
-        }, '');
+          return index === 0
+            ? `M${point.x},${point.y}`
+            : `${path} L${point.x},${point.y}`;
+        }, "");
         return (
           <path
             key={element.id}
@@ -393,7 +418,7 @@ export const Canvas: React.FC<CanvasProps> = ({
           />
         );
 
-      case 'rectangle':
+      case "rectangle":
         return (
           <rect
             key={element.id}
@@ -407,7 +432,7 @@ export const Canvas: React.FC<CanvasProps> = ({
           />
         );
 
-      case 'circle':
+      case "circle":
         return (
           <ellipse
             key={element.id}
@@ -420,7 +445,7 @@ export const Canvas: React.FC<CanvasProps> = ({
           />
         );
 
-      case 'line':
+      case "line":
         return (
           <line
             key={element.id}
@@ -433,7 +458,7 @@ export const Canvas: React.FC<CanvasProps> = ({
           />
         );
 
-      case 'arrow':
+      case "arrow":
         if (!element.startPoint || !element.endPoint) return null;
         const angle = Math.atan2(
           element.endPoint.y - element.startPoint.y,
@@ -441,14 +466,14 @@ export const Canvas: React.FC<CanvasProps> = ({
         );
         const arrowLength = 15;
         const arrowAngle = Math.PI / 6;
-        
+
         const arrowPoint1 = {
           x: element.endPoint.x - arrowLength * Math.cos(angle - arrowAngle),
-          y: element.endPoint.y - arrowLength * Math.sin(angle - arrowAngle)
+          y: element.endPoint.y - arrowLength * Math.sin(angle - arrowAngle),
         };
         const arrowPoint2 = {
           x: element.endPoint.x - arrowLength * Math.cos(angle + arrowAngle),
-          y: element.endPoint.y - arrowLength * Math.sin(angle + arrowAngle)
+          y: element.endPoint.y - arrowLength * Math.sin(angle + arrowAngle),
         };
 
         return (
@@ -470,7 +495,7 @@ export const Canvas: React.FC<CanvasProps> = ({
           </g>
         );
 
-      case 'text':
+      case "text":
         if (editingText === element.id) {
           return (
             <foreignObject
@@ -486,10 +511,10 @@ export const Canvas: React.FC<CanvasProps> = ({
                 onChange={(e) => setTextInput(e.target.value)}
                 onBlur={handleTextSubmit}
                 onKeyDown={(e) => {
-                  if (e.key === 'Enter') handleTextSubmit();
-                  if (e.key === 'Escape') {
+                  if (e.key === "Enter") handleTextSubmit();
+                  if (e.key === "Escape") {
                     setEditingText(null);
-                    setTextInput('');
+                    setTextInput("");
                   }
                 }}
                 autoFocus
@@ -508,7 +533,9 @@ export const Canvas: React.FC<CanvasProps> = ({
             fill={element.color}
             fontSize="16"
             fontFamily="Inter, sans-serif"
-            className={`cursor-pointer select-none ${element.selected ? 'font-semibold' : ''}`}
+            className={`cursor-pointer select-none ${
+              element.selected ? "font-semibold" : ""
+            }`}
             onDoubleClick={() => handleElementDoubleClick(element)}
           >
             {element.text}
@@ -528,41 +555,47 @@ export const Canvas: React.FC<CanvasProps> = ({
       // Arrow keys for panning
       const panSpeed = 20;
       switch (event.key) {
-        case 'ArrowUp':
+        case "ArrowUp":
           event.preventDefault();
-          setPan(prev => ({ x: prev.x, y: prev.y + panSpeed }));
+          setPan((prev) => ({ x: prev.x, y: prev.y + panSpeed }));
           break;
-        case 'ArrowDown':
+        case "ArrowDown":
           event.preventDefault();
-          setPan(prev => ({ x: prev.x, y: prev.y - panSpeed }));
+          setPan((prev) => ({ x: prev.x, y: prev.y - panSpeed }));
           break;
-        case 'ArrowLeft':
+        case "ArrowLeft":
           event.preventDefault();
-          setPan(prev => ({ x: prev.x + panSpeed, y: prev.y }));
+          setPan((prev) => ({ x: prev.x + panSpeed, y: prev.y }));
           break;
-        case 'ArrowRight':
+        case "ArrowRight":
           event.preventDefault();
-          setPan(prev => ({ x: prev.x - panSpeed, y: prev.y }));
+          setPan((prev) => ({ x: prev.x - panSpeed, y: prev.y }));
           break;
       }
 
-      if (event.key === 'Delete' && selectedElement) {
+      if (event.key === "Delete" && selectedElement) {
         deleteElement(selectedElement);
         saveToHistory();
       }
     };
 
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
   }, [selectedElement, deleteElement, editingText, saveToHistory, setPan]);
 
-  const cursor = tool === 'select' ? 'default' : 
-                tool === 'text' ? 'text' : 
-                tool === 'eraser' ? 'crosshair' :
-                isPanning ? 'grabbing' : 'crosshair';
+  const cursor =
+    tool === "select"
+      ? "default"
+      : tool === "text"
+      ? "text"
+      : tool === "eraser"
+      ? "crosshair"
+      : isPanning
+      ? "grabbing"
+      : "crosshair";
 
   return (
-    <div className="fixed inset-0 bg-gray-50 overflow-hidden">
+    <div className="fixed inset-0 bg-black overflow-hidden">
       <svg
         ref={svgRef}
         width="100%"
@@ -585,12 +618,12 @@ export const Canvas: React.FC<CanvasProps> = ({
             <path
               d="M 20 0 L 0 0 0 20"
               fill="none"
-              stroke="#E5E7EB"
+              stroke="#374151"
               strokeWidth="0.5"
             />
           </pattern>
         </defs>
-        
+
         <g transform={`translate(${pan.x}, ${pan.y})`}>
           <rect
             x="-5000"
@@ -599,15 +632,15 @@ export const Canvas: React.FC<CanvasProps> = ({
             height="10000"
             fill="url(#grid)"
           />
-          
+
           {elements.map(renderElement)}
         </g>
       </svg>
 
       {/* Instructions */}
-      <div className="fixed bottom-4 left-4 bg-white rounded-lg shadow-lg border border-gray-200 px-4 py-3 max-w-sm">
-        <h3 className="font-semibold text-gray-800 mb-2">Atalhos:</h3>
-        <div className="text-sm text-gray-600 space-y-1">
+      <div className="fixed bottom-4 left-4 bg-gray-800 rounded-lg shadow-lg border border-gray-700 px-4 py-3 max-w-sm">
+        <h3 className="font-semibold text-gray-200 mb-2">Atalhos:</h3>
+        <div className="text-sm text-gray-400 space-y-1">
           <div>• Setas: Mover quadro</div>
           <div>• Cmd + Clique: Pan</div>
           <div>• Delete: Excluir selecionado</div>

@@ -1,3 +1,4 @@
+// src/components/drawing.ts
 export interface Point {
   x: number;
   y: number;
@@ -5,7 +6,7 @@ export interface Point {
 
 export interface DrawingElement {
   id: string;
-  type: 'freehand' | 'rectangle' | 'circle' | 'line' | 'arrow' | 'text';
+  type: "freehand" | "rectangle" | "circle" | "line" | "arrow" | "text";
   points?: Point[];
   x?: number;
   y?: number;
@@ -26,6 +27,21 @@ export interface CanvasState {
   pan: Point;
 }
 
-export type Tool = 'select' | 'freehand' | 'rectangle' | 'circle' | 'line' | 'arrow' | 'text';
+export type Tool =
+  | "select"
+  | "freehand"
+  | "rectangle"
+  | "circle"
+  | "line"
+  | "arrow"
+  | "text";
 
-export type Tool = 'select' | 'freehand' | 'rectangle' | 'circle' | 'line' | 'arrow' | 'text' | 'eraser';
+export type Tool =
+  | "select"
+  | "freehand"
+  | "rectangle"
+  | "circle"
+  | "line"
+  | "arrow"
+  | "text"
+  | "eraser";

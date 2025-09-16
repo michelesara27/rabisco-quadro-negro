@@ -1,10 +1,11 @@
-import React, { useRef } from 'react';
-import { 
-  MousePointer, 
-  Pencil, 
-  Square, 
-  Circle, 
-  Minus, 
+// src/components/Toolbar.tsx
+import React, { useRef, useState } from "react";
+import {
+  MousePointer,
+  Pencil,
+  Square,
+  Circle,
+  Minus,
   ArrowRight,
   Type,
   Eraser,
@@ -13,10 +14,10 @@ import {
   Undo,
   Redo,
   Trash2,
-  Palette
-} from 'lucide-react';
-import { Tool } from '../types/drawing';
-import { ColorPicker } from './ColorPicker';
+  Palette,
+} from "lucide-react";
+import { Tool } from "../types/drawing";
+import { ColorPicker } from "./ColorPicker";
 
 interface ToolbarProps {
   tool: Tool;
@@ -47,40 +48,53 @@ export const Toolbar: React.FC<ToolbarProps> = ({
   onRedo,
   onClear,
   canUndo,
-  canRedo
+  canRedo,
 }) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const [showColorPicker, setShowColorPicker] = React.useState(false);
+  const [showColorPicker, setShowColorPicker] = useState(false);
 
   const tools = [
-    { type: 'select' as Tool, icon: MousePointer, label: 'Selecionar' },
-    { type: 'freehand' as Tool, icon: Pencil, label: 'Desenho Livre' },
-    { type: 'eraser' as Tool, icon: Eraser, label: 'Borracha' },
-    { type: 'rectangle' as Tool, icon: Square, label: 'Retângulo' },
-    { type: 'circle' as Tool, icon: Circle, label: 'Círculo' },
-    { type: 'line' as Tool, icon: Minus, label: 'Linha' },
-    { type: 'arrow' as Tool, icon: ArrowRight, label: 'Seta' },
-    { type: 'text' as Tool, icon: Type, label: 'Texto' },
+    { type: "select" as Tool, icon: MousePointer, label: "Selecionar" },
+    { type: "freehand" as Tool, icon: Pencil, label: "Desenho Livre" },
+    { type: "eraser" as Tool, icon: Eraser, label: "Borracha" },
+    { type: "rectangle" as Tool, icon: Square, label: "Retângulo" },
+    { type: "circle" as Tool, icon: Circle, label: "Círculo" },
+    { type: "line" as Tool, icon: Minus, label: "Linha" },
+    { type: "arrow" as Tool, icon: ArrowRight, label: "Seta" },
+    { type: "text" as Tool, icon: Type, label: "Texto" },
   ];
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
       onLoad(file);
-      event.target.value = '';
+      event.target.value = "";
     }
   };
 
   const handleClearClick = () => {
-    const confirmed = window.confirm('Isso irá limpar todo o canvas. Deseja continuar?');
+    const confirmed = window.confirm(
+      "Isso irá limpar todo o canvas. Deseja continuar?"
+    );
     if (confirmed) {
       onClear();
     }
   };
 
+  const handleColorSelect = (selectedColor: string) => {
+    console.log("Cor selecionada:", selectedColor); // Debug
+    setColor(selectedColor);
+    setShowColorPicker(false);
+  };
+
+  const toggleColorPicker = () => {
+    console.log("Toggle color picker, estado atual:", showColorPicker); // Debug
+    setShowColorPicker(!showColorPicker);
+  };
+
   return (
     <>
-      <div className="fixed top-4 left-1/2 transform -translate-x-1/2 z-10">
+      <div className="fixed top-4 left-1/2 transform -translate-x-1/2 z-30">
         <div className="bg-white rounded-xl shadow-lg border border-gray-200 p-3 flex items-center gap-3">
           {/* File Operations */}
           <div className="flex items-center gap-1 border-r border-gray-200 pr-3">
@@ -135,8 +149,8 @@ export const Toolbar: React.FC<ToolbarProps> = ({
                 onClick={() => setTool(type)}
                 className={`p-2 rounded-lg transition-all duration-150 ${
                   tool === type
-                    ? 'bg-blue-100 text-blue-700 shadow-inner'
-                    : 'text-gray-700 hover:bg-gray-100 hover:text-gray-900'
+                    ? "bg-blue-100 text-blue-700 shadow-inner"
+                    : "text-gray-700 hover:bg-gray-100 hover:text-gray-900"
                 }`}
                 title={label}
               >
@@ -149,9 +163,9 @@ export const Toolbar: React.FC<ToolbarProps> = ({
           <div className="flex items-center gap-3">
             <div className="relative">
               <button
-                onClick={() => setShowColorPicker(!showColorPicker)}
+                onClick={toggleColorPicker}
                 className="p-2 rounded-lg hover:bg-gray-100 transition-colors duration-150 text-gray-700 hover:text-gray-900"
-                title="Cor"
+                title="Selecionar cor"
               >
                 <div className="flex items-center gap-1">
                   <Palette size={20} />
@@ -161,10 +175,10 @@ export const Toolbar: React.FC<ToolbarProps> = ({
                   />
                 </div>
               </button>
-              
+
               {showColorPicker && (
-                <div className="absolute top-12 left-0 z-30">
-                  <ColorPicker color={color} onChange={setColor} />
+                <div className="absolute top-12 left-0 z-40">
+                  <ColorPicker color={color} onChange={handleColorSelect} />
                 </div>
               )}
             </div>
@@ -196,8 +210,11 @@ export const Toolbar: React.FC<ToolbarProps> = ({
       {/* Click outside to close color picker */}
       {showColorPicker && (
         <div
-          className="fixed inset-0 z-20"
-          onClick={() => setShowColorPicker(false)}
+          className="fixed inset-0 z-20 bg-transparent"
+          onClick={() => {
+            console.log("Clicando fora para fechar"); // Debug
+            setShowColorPicker(false);
+          }}
         />
       )}
     </>
